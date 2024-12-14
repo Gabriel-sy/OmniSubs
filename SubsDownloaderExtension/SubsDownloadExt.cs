@@ -2,8 +2,11 @@
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 using System.Windows.Forms;
+using Newtonsoft.Json;
 using SharpShell.Attributes;
 using SharpShell.SharpContextMenu;
 
@@ -18,6 +21,7 @@ namespace SubsDownloaderExtension
             "SubtitleDownloader",
             "data.txt");
         private readonly HttpClient _httpClient;
+        private ApiService _service = new ApiService();
 
         public SubsDownloadExt()
         {
@@ -62,14 +66,97 @@ namespace SubsDownloaderExtension
 
             return menu;
         }
-        public void DownloadSub()
+        public async void DownloadSub()
+        {
+            CheckJwtStillValid();
+            
+            var token = File.ReadLines(DATA_PATH).Take(1).First();
+
+            var subtitleId = await SearchSubtitle(token);
+            LogDebug(subtitleId);
+            
+            var request = new HttpRequestMessage
+            {
+                Method = HttpMethod.Post,
+                RequestUri = new Uri("https://api.opensubtitles.com/api/v1/download"),
+                Headers =
+                {
+                    { "Authorization", $"Bearer {token}" }
+                },
+                Content = new StringContent("{\n  \"file_id\": " + subtitleId + "\n}")
+                {
+                    Headers =
+                    {
+                        ContentType = new MediaTypeHeaderValue("application/json")
+                    }
+                }
+            };
+            using (var response = await _httpClient.SendAsync(request))
+            {
+                var body = await response.Content.ReadAsStringAsync();
+                
+                var responseBody = JsonConvert.DeserializeObject<DownloadResult>(body);
+            }
+            
+        }
+
+        public async void CheckJwtStillValid()
         {
             var token = File.ReadLines(DATA_PATH).Take(1).First();
             var username = File.ReadLines(DATA_PATH).Skip(1).Take(1).First();
             var password = File.ReadLines(DATA_PATH).Skip(2).Take(1).First();
-            
-            
+
+            var request = new HttpRequestMessage
+            {
+                Method = HttpMethod.Post,
+                RequestUri = new Uri("https://api.opensubtitles.com/api/v1/download"),
+                Headers =
+                {
+                    { "Authorization", $"Bearer {token}" }
+                },
+                Content = new StringContent("{\n  \"file_id\": 8964616\n}")
+                {
+                    Headers =
+                    {
+                        ContentType = new MediaTypeHeaderValue("application/json")
+                    }
+                }
+            };
+            using (var response = await _httpClient.SendAsync(request))
+            {
+                if (!response.IsSuccessStatusCode)
+                {
+                    _service.LogIn(username, password);
+                }
+            }
         }
+        
+        public async Task<string> SearchSubtitle(string token)
+        {
+            var request = new HttpRequestMessage
+            {
+                Method = HttpMethod.Get,
+                RequestUri = 
+                    new Uri($"https://api.opensubtitles.com/api/v1/subtitles?query={Path.GetFileNameWithoutExtension(SelectedItemPaths.First())}&languages=en"),
+                Headers =
+                {
+                    { "User-Agent", "subsdown" },
+                    { "Authorization", $"Bearer {token}" },
+                    { "Api-Key", "4QvhsW4PzmhnDLkome6HhV3R26mg4Dht" },
+                },
+            };
+            using (var response = await _httpClient.SendAsync(request))
+            {
+                
+                var body = await response.Content.ReadAsStringAsync();
+                
+                var responseBody = JsonConvert.DeserializeObject<Result>(body);
+                var data = responseBody.Data.OrderByDescending(s => s.Attributes.Download_count);
+                return data.First().Attributes.Files.First().File_id.ToString();
+            }
+        }
+        
+        
     }
     
 }
