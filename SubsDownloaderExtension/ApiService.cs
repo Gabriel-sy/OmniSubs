@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
@@ -86,6 +87,94 @@ namespace SubsDownloaderExtension
         
                 }
         
+            }
+        }
+
+        public async Task<string> SearchSubtitle(string token, string query)
+        {
+            var language = File.ReadLines(DATA_PATH).Skip(3).Take(1).First();
+            
+            var request = new HttpRequestMessage
+            {
+                Method = HttpMethod.Get,
+                RequestUri = 
+                    new Uri($"https://api.opensubtitles.com/api/v1/subtitles?query={query}&languages={language}"),
+                Headers =
+                {
+                    { "User-Agent", "subsdown" },
+                    { "Authorization", $"Bearer {token}" },
+                    { "Api-Key", "4QvhsW4PzmhnDLkome6HhV3R26mg4Dht" },
+                },
+            };
+            using (var response = await _httpClient.SendAsync(request))
+            {
+                
+                var body = await response.Content.ReadAsStringAsync();
+                
+                var responseBody = JsonConvert.DeserializeObject<Result>(body);
+                
+                var data = responseBody.Data.OrderByDescending(s => s.Attributes.From_trusted)
+                    .ThenByDescending(s => s.Attributes.New_download_count).ThenByDescending(s => s.Attributes.Download_count);
+                
+                return data.First().Attributes.Files.First().File_id.ToString();
+            }
+        }
+
+        public async void CheckJwtStillValid()
+        {
+            var token = File.ReadLines(DATA_PATH).Take(1).First();
+            var username = File.ReadLines(DATA_PATH).Skip(1).Take(1).First();
+            var password = File.ReadLines(DATA_PATH).Skip(2).Take(1).First();
+
+            var request = new HttpRequestMessage
+            {
+                Method = HttpMethod.Post,
+                RequestUri = new Uri("https://api.opensubtitles.com/api/v1/download"),
+                Headers =
+                {
+                    { "Authorization", $"Bearer {token}" }
+                },
+                Content = new StringContent("{\n  \"file_id\": 8964616\n}")
+                {
+                    Headers =
+                    {
+                        ContentType = new MediaTypeHeaderValue("application/json")
+                    }
+                }
+            };
+            using (var response = await _httpClient.SendAsync(request))
+            {
+                if (!response.IsSuccessStatusCode)
+                {
+                    LogIn(username, password);
+                }
+            }
+        }
+        
+        public async Task<string> GetDownloadUrl(string token, string subtitleId)
+        {
+            var request = new HttpRequestMessage
+            {
+                Method = HttpMethod.Post,
+                RequestUri = new Uri("https://api.opensubtitles.com/api/v1/download"),
+                Headers =
+                {
+                    { "Authorization", $"Bearer {token}" }
+                },
+                Content = new StringContent("{\n  \"file_id\": " + subtitleId + "\n}")
+                {
+                    Headers =
+                    {
+                        ContentType = new MediaTypeHeaderValue("application/json")
+                    }
+                }
+            };
+            using (var response = await _httpClient.SendAsync(request))
+            {
+                var body = await response.Content.ReadAsStringAsync();
+                
+                var responseBody = JsonConvert.DeserializeObject<DownloadResult>(body);
+                return responseBody.Link;
             }
         }
     }
