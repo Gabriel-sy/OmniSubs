@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:LoginWindow"
         mc:Ignorable="d"
-        Title="OpenSubtitles Login" Height="400" Width="450">
+        Title="OpenSubtitles Login" Height="500" Width="450">
     <Grid>
         <StackPanel Margin="50,40,50,40">
             <TextBlock Text="Login to OpenSubtitles.com"
@@ -31,6 +31,66 @@
                          Padding="5"
                          FontSize="14"
                          Margin="0,0,0,30"/>
+            
+            <TextBlock Text="Preferred Language"
+               Margin="0,5,0,5"
+               FontSize="14"/>
+            
+            <ComboBox x:Name="LanguageSelector"
+                  Height="35"
+                  Padding="5"
+                  FontSize="14"
+                  Margin="0,0,0,15">
+            <ComboBoxItem Content="English"/>
+            <ComboBoxItem Content="Spanish (Español)"/>
+            <ComboBoxItem Content="Mandarin Chinese (中文)"/>
+            <ComboBoxItem Content="Hindi (हिन्दी)"/>
+            <ComboBoxItem Content="Arabic (العربية)"/>
+            <ComboBoxItem Content="Bengali (বাংলা)"/>
+            <ComboBoxItem Content="Portuguese (Brazil)"/>
+            <ComboBoxItem Content="Portuguese (Portugal)"/>
+            <ComboBoxItem Content="Russian (Русский)"/>
+            <ComboBoxItem Content="Japanese (日本語)"/>
+            <ComboBoxItem Content="German (Deutsch)"/>
+            <ComboBoxItem Content="French (Français)"/>
+            <ComboBoxItem Content="Italian (Italiano)"/>
+            <ComboBoxItem Content="Korean (한국어)"/>
+            <ComboBoxItem Content="Vietnamese (Tiếng Việt)"/>
+            <ComboBoxItem Content="Turkish (Türkçe)"/>
+            <ComboBoxItem Content="Polish (Polski)"/>
+            <ComboBoxItem Content="Ukrainian (Українська)"/>
+            <ComboBoxItem Content="Persian (فارسی)"/>
+            <ComboBoxItem Content="Thai (ไทย)"/>
+            <ComboBoxItem Content="Dutch (Nederlands)"/>
+            <ComboBoxItem Content="Greek (Ελληνικά)"/>
+            <ComboBoxItem Content="Czech (Čeština)"/>
+            <ComboBoxItem Content="Swedish (Svenska)"/>
+            <ComboBoxItem Content="Romanian (Română)"/>
+            <ComboBoxItem Content="Hungarian (Magyar)"/>
+            <ComboBoxItem Content="Danish (Dansk)"/>
+            <ComboBoxItem Content="Finnish (Suomi)"/>
+            <ComboBoxItem Content="Norwegian (Norsk)"/>
+            <ComboBoxItem Content="Slovak (Slovenčina)"/>
+            <ComboBoxItem Content="Croatian (Hrvatski)"/>
+            <ComboBoxItem Content="Bulgarian (Български)"/>
+            <ComboBoxItem Content="Hebrew (עברית)"/>
+            <ComboBoxItem Content="Lithuanian (Lietuvių)"/>
+            <ComboBoxItem Content="Slovenian (Slovenščina)"/>
+            <ComboBoxItem Content="Estonian (Eesti)"/>
+            <ComboBoxItem Content="Latvian (Latviešu)"/>
+            <ComboBoxItem Content="Serbian (Српски)"/>
+            <ComboBoxItem Content="Indonesian (Bahasa Indonesia)"/>
+            <ComboBoxItem Content="Malay (Bahasa Melayu)"/>
+            <ComboBoxItem Content="Tagalog (Filipino)"/>
+            <ComboBoxItem Content="Urdu (اردو)"/>
+            <ComboBoxItem Content="Tamil (தமிழ்)"/>
+            <ComboBoxItem Content="Telugu (తెలుగు)"/>
+            <ComboBoxItem Content="Kannada (ಕನ್ನಡ)"/>
+            <ComboBoxItem Content="Malayalam (മലയാളം)"/>
+            <ComboBoxItem Content="Marathi (मराठी)"/>
+            <ComboBoxItem Content="Gujarati (ગુજરાતી)"/>
+            <ComboBoxItem Content="Punjabi (ਪੰਜਾਬੀ)"/>
+        </ComboBox>
             
             <Button Click="ButtonClick"
                     x:Name="LoginButton"

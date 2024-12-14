@@ -73,8 +73,20 @@ namespace SubsDownloaderExtension
             var token = File.ReadLines(DATA_PATH).Take(1).First();
 
             var subtitleId = await SearchSubtitle(token);
-            LogDebug(subtitleId);
             
+            var savePath = Path.GetDirectoryName(Path.GetFullPath(SelectedItemPaths.First()));
+            
+            var fullPath = Path.Combine(savePath, $"{Path.GetFileNameWithoutExtension(SelectedItemPaths.First())}.srt");
+
+            var downloadUrl = await GetDownloadUrl(token, subtitleId);
+            
+            byte[] fileBytes = await _httpClient.GetByteArrayAsync(downloadUrl);
+            
+            File.WriteAllBytes(fullPath, fileBytes);
+        }
+
+        public async Task<string> GetDownloadUrl(string token, string subtitleId)
+        {
             var request = new HttpRequestMessage
             {
                 Method = HttpMethod.Post,
@@ -96,8 +108,8 @@ namespace SubsDownloaderExtension
                 var body = await response.Content.ReadAsStringAsync();
                 
                 var responseBody = JsonConvert.DeserializeObject<DownloadResult>(body);
+                return responseBody.Link;
             }
-            
         }
 
         public async void CheckJwtStillValid()
@@ -133,11 +145,12 @@ namespace SubsDownloaderExtension
         
         public async Task<string> SearchSubtitle(string token)
         {
+            var language = File.ReadLines(DATA_PATH).Skip(3).Take(1).First();
             var request = new HttpRequestMessage
             {
                 Method = HttpMethod.Get,
                 RequestUri = 
-                    new Uri($"https://api.opensubtitles.com/api/v1/subtitles?query={Path.GetFileNameWithoutExtension(SelectedItemPaths.First())}&languages=en"),
+                    new Uri($"https://api.opensubtitles.com/api/v1/subtitles?query={Path.GetFileNameWithoutExtension(SelectedItemPaths.First())}&languages={language}"),
                 Headers =
                 {
                     { "User-Agent", "subsdown" },
@@ -151,7 +164,8 @@ namespace SubsDownloaderExtension
                 var body = await response.Content.ReadAsStringAsync();
                 
                 var responseBody = JsonConvert.DeserializeObject<Result>(body);
-                var data = responseBody.Data.OrderByDescending(s => s.Attributes.Download_count);
+                var data = responseBody.Data.OrderByDescending(s => s.Attributes.From_trusted)
+                    .ThenByDescending(s => s.Attributes.New_download_count).ThenByDescending(s => s.Attributes.Download_count);
                 return data.First().Attributes.Files.First().File_id.ToString();
             }
         }
