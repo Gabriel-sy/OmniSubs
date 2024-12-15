@@ -75,16 +75,8 @@ namespace SubsDownloaderExtension
                 else
                 {
                     var stream = await response.Content.ReadAsStringAsync();
-                    try
-                    {
                         var responseBody = JsonConvert.DeserializeObject<Jwt>(stream);
                         SaveToken(responseBody.Token, username, password);
-                    }
-                    catch (Exception e)
-                    {
-                        MessageBox.Show(e.Message);
-                    }
-        
                 }
         
             }
@@ -108,15 +100,28 @@ namespace SubsDownloaderExtension
             };
             using (var response = await _httpClient.SendAsync(request))
             {
+                if (!response.IsSuccessStatusCode)
+                {
+                    MessageBox.Show("An error ocurred while searching the subtitle, try again later");
+                    return null;
+                }
+
+                try
+                {
+                    var body = await response.Content.ReadAsStringAsync();
                 
-                var body = await response.Content.ReadAsStringAsync();
+                    var responseBody = JsonConvert.DeserializeObject<Result>(body);
                 
-                var responseBody = JsonConvert.DeserializeObject<Result>(body);
-                
-                var data = responseBody.Data.OrderByDescending(s => s.Attributes.From_trusted)
-                    .ThenByDescending(s => s.Attributes.New_download_count).ThenByDescending(s => s.Attributes.Download_count);
-                
-                return data.First().Attributes.Files.First().File_id.ToString();
+                    var data = responseBody.Data.OrderByDescending(s => s.Attributes.From_trusted)
+                        .ThenByDescending(s => s.Attributes.New_download_count).ThenByDescending(s => s.Attributes.Download_count);
+                    
+                    return data.First().Attributes.Files.First().File_id.ToString();
+                }
+                catch (InvalidOperationException e)
+                {
+                    MessageBox.Show("No subtitle was found");
+                    return null;
+                }
             }
         }
 
@@ -171,10 +176,20 @@ namespace SubsDownloaderExtension
             };
             using (var response = await _httpClient.SendAsync(request))
             {
-                var body = await response.Content.ReadAsStringAsync();
+                if (response.IsSuccessStatusCode)
+                {
+                    var body = await response.Content.ReadAsStringAsync();
                 
-                var responseBody = JsonConvert.DeserializeObject<DownloadResult>(body);
-                return responseBody.Link;
+                    var responseBody = JsonConvert.DeserializeObject<DownloadResult>(body);
+                    return responseBody.Link;
+                }
+                else
+                {
+                    MessageBox.Show("You reached the daily quota for downloads, " +
+                                    "this is due to OpenSubtitles.com limiting download amount");
+                    return null;
+                }
+                
             }
         }
     }

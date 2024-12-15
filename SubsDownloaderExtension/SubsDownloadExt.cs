@@ -36,16 +36,6 @@ namespace SubsDownloaderExtension
         {
             return true;
         }
-        
-        private void LogDebug(string message)
-        {
-                string logPath = Path.Combine(
-                    Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
-                    "ShellExtensionLog.txt");
-
-                File.AppendAllText(logPath,
-                    $"{DateTime.Now}: {message}{Environment.NewLine}");
-        }
 
         protected override ContextMenuStrip CreateMenu()
         {
@@ -77,13 +67,13 @@ namespace SubsDownloaderExtension
             var fullPath = Path.Combine(savePath, $"{fileName}.srt");
 
             var downloadUrl = await _service.GetDownloadUrl(token, subtitleId);
+
+            if (downloadUrl == null || subtitleId == null) return;
             
             byte[] fileBytes = await _httpClient.GetByteArrayAsync(downloadUrl);
             
             File.WriteAllBytes(fullPath, fileBytes);
         }
-
-        
     }
     
 }
