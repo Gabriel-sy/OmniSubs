@@ -38,8 +38,12 @@ public partial class MainWindow : Window
             var selectedLanguage = ((ComboBoxItem)LanguageSelector.SelectedItem).Content.ToString() ?? "English";
 
             var languageCode = GetLanguageCode(selectedLanguage);
+
+            if (!Directory.Exists(Path.GetDirectoryName(DATA_PATH)))
+            {
+                Directory.CreateDirectory(Path.GetDirectoryName(DATA_PATH)); 
+            }
             
-            Directory.CreateDirectory(Path.GetDirectoryName(DATA_PATH));
             File.WriteAllText(DATA_PATH, token);
             using(var sw = new StreamWriter(DATA_PATH, true))
             {
@@ -49,10 +53,9 @@ public partial class MainWindow : Window
             }
             MessageBox.Show("Login successful!");
         }
-        catch (Exception e)
+        catch (SystemException e)
         {
-            Console.WriteLine(e.Message);
-            MessageBox.Show("There was an error while saving data, try again.");
+            MessageBox.Show("There was an error while saving your data, try again.");
         }
     }
 
@@ -140,7 +143,7 @@ public partial class MainWindow : Window
         {
             if (!response.IsSuccessStatusCode)
             {
-                MessageBox.Show("Username or password incorrect, try again");
+                MessageBox.Show("Incorrect username or password, try again");
             }
             else
             {
