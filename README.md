@@ -14,7 +14,7 @@ An automated subtitle downloader for movies and TV shows that integrates with Wi
 
 ## Installation/Setup
 
-1. Download the latest zip from [releases page](https://github.com/Gabriel-sy/SubtitlesDownloader/releases)
+1. Download the latest rar from [releases page](https://github.com/Gabriel-sy/SubtitlesDownloader/releases)
 2. Extract the zip file to your preferred location
 3. Run the `setup.bat` file with administrator privileges
 4. Create a Opensubtitles.com account if you don't have one yet
@@ -28,5 +28,6 @@ An automated subtitle downloader for movies and TV shows that integrates with Wi
 3. Click the option and wait for the download to complete
 4. The subtitle file will be saved in the same directory as your video file
 
-
-### This application only stores your login credentials locally. Your credentials are used solely for authenticating with OpenSubtitles.com.
+## Notes
+ - Opensubtitles limits daily downloads for free users, so you might face errors downloading many in one day
+ - This application only stores your login credentials locally. Your credentials are used solely for authenticating with OpenSubtitles.com
