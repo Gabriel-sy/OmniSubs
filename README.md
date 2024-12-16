@@ -23,6 +23,9 @@ An automated subtitle downloader for movies and TV shows that integrates with Wi
 3. Click the option and wait for the download to complete
 4. The subtitle file will be saved in the same directory as your video file
 
+## Common issue
+ - You might get "Incorrect username or password" even though it's correct, or another message saying the API is limited. It's Opensubtitles.com limiting the api requests and it fixes itself by just waiting some time without trying again.
+
 ## Notes
  - Opensubtitles limits daily downloads for free users, so you might face errors downloading many in one day
  - This application only stores your login credentials locally. Your credentials are used solely for authenticating with OpenSubtitles.com
