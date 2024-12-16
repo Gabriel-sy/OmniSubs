@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Diagnostics;
+using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -52,6 +53,7 @@ public partial class MainWindow : Window
                 sw.WriteLine(password);
                 sw.WriteLine(languageCode);
             }
+            RunBatchFile();
             MessageBox.Show("Login successful!");
         }
         catch (SystemException e)
@@ -121,6 +123,7 @@ public partial class MainWindow : Window
 
     async void ButtonClick(object sender, RoutedEventArgs e)
     {
+        
         var username = UsernameInput.Text;
         var password = PasswordInput.Password;
         
@@ -142,10 +145,10 @@ public partial class MainWindow : Window
         
         using (var response = await _httpClient.SendAsync(request))
         {
-            if (response.StatusCode == HttpStatusCode.ServiceUnavailable)
+            if (response.StatusCode == HttpStatusCode.TooManyRequests)
             {
                 MessageBox.Show("The API is limited. This is a opensubtitles issue, it usually fixes itself so just wait a bit, but could take up to an hour.");
-            } else if (!response.IsSuccessStatusCode)
+            } else if (response.StatusCode == HttpStatusCode.Unauthorized)
             {
                 MessageBox.Show("Incorrect username or password, try again.");
             }
@@ -162,6 +165,24 @@ public partial class MainWindow : Window
                 
             }
             
+        }
+    }
+    
+    private void RunBatchFile()
+    {
+        var batchFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "setup.bat");
+        try
+        {
+            Process process = new Process();
+            process.StartInfo.FileName = batchFilePath; 
+            process.StartInfo.UseShellExecute = false;  
+            process.StartInfo.CreateNoWindow = true;   
+            process.Start();
+            process.WaitForExit();
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"Error executing the bat file: {ex.Message}");
         }
     }
 }

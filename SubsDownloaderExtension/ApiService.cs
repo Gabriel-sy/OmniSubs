@@ -69,19 +69,15 @@ namespace SubsDownloaderExtension
         
             using (var response = await _httpClient.SendAsync(request))
             {
-                if (response.StatusCode == HttpStatusCode.ServiceUnavailable)
+                if (!response.IsSuccessStatusCode)
                 {
-                    MessageBox.Show("The API is limited. This is a opensubtitles issue, it usually fixes itself, but could take up to an hour.");
-                }
-                else if (!response.IsSuccessStatusCode)
-                {
-                    MessageBox.Show("Try logging in again.");
+                    MessageBox.Show("You either didn't login through the LoginWindow.exe yet or The API is limited. This is a opensubtitles issue, it usually fixes itself, but could take up to an hour.");
                 }
                 else
                 {
                     var stream = await response.Content.ReadAsStringAsync();
-                        var responseBody = JsonConvert.DeserializeObject<Jwt>(stream);
-                        SaveToken(responseBody.Token, username, password);
+                    var responseBody = JsonConvert.DeserializeObject<Jwt>(stream);
+                    SaveToken(responseBody.Token, username, password);
                 }
         
             }
