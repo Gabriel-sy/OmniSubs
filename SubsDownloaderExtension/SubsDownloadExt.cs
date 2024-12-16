@@ -13,7 +13,7 @@ using SharpShell.SharpContextMenu;
 namespace SubsDownloaderExtension
 {
     [ComVisible(true)]
-    [COMServerAssociation(AssociationType.ClassOfExtension, ".mp4", ".mkv", ".avi")]
+    [COMServerAssociation(AssociationType.AllFiles)]
     public class SubsDownloadExt : SharpContextMenu
     {
         private static readonly string DATA_PATH = Path.Combine(
@@ -34,7 +34,9 @@ namespace SubsDownloaderExtension
         
         protected override bool CanShowMenu()
         {
-            return true;
+            var supportedExtensions = new[] { ".mp4", ".mkv", ".avi" };
+            var fileExtension = Path.GetExtension(SelectedItemPaths.First()).ToLowerInvariant();
+            return supportedExtensions.Contains(fileExtension);
         }
 
         protected override ContextMenuStrip CreateMenu()
@@ -61,6 +63,8 @@ namespace SubsDownloaderExtension
             
             var subtitleId = await _service.SearchSubtitle
                 (token, fileName);
+
+            if (subtitleId == null) return;
             
             var savePath = Path.GetDirectoryName(Path.GetFullPath(SelectedItemPaths.First()));
             
@@ -68,7 +72,7 @@ namespace SubsDownloaderExtension
 
             var downloadUrl = await _service.GetDownloadUrl(token, subtitleId);
 
-            if (downloadUrl == null || subtitleId == null) return;
+            if (downloadUrl == null) return;
             
             byte[] fileBytes = await _httpClient.GetByteArrayAsync(downloadUrl);
             

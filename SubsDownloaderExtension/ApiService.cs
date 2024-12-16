@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
@@ -68,7 +69,11 @@ namespace SubsDownloaderExtension
         
             using (var response = await _httpClient.SendAsync(request))
             {
-                if (!response.IsSuccessStatusCode)
+                if (response.StatusCode == HttpStatusCode.ServiceUnavailable)
+                {
+                    MessageBox.Show("The API is limited. This is a opensubtitles issue, it usually fixes itself, but could take up to an hour.");
+                }
+                else if (!response.IsSuccessStatusCode)
                 {
                     MessageBox.Show("Try logging in again.");
                 }
@@ -100,6 +105,7 @@ namespace SubsDownloaderExtension
             };
             using (var response = await _httpClient.SendAsync(request))
             {
+                
                 if (!response.IsSuccessStatusCode)
                 {
                     MessageBox.Show("An error ocurred while searching the subtitle, try again later");

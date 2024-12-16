@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
@@ -141,9 +142,12 @@ public partial class MainWindow : Window
         
         using (var response = await _httpClient.SendAsync(request))
         {
-            if (!response.IsSuccessStatusCode)
+            if (response.StatusCode == HttpStatusCode.ServiceUnavailable)
             {
-                MessageBox.Show("Incorrect username or password, try again");
+                MessageBox.Show("The API is limited. This is a opensubtitles issue, it usually fixes itself so just wait a bit, but could take up to an hour.");
+            } else if (!response.IsSuccessStatusCode)
+            {
+                MessageBox.Show("Incorrect username or password, try again.");
             }
             else
             {
