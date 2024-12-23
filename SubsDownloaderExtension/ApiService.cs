@@ -119,9 +119,9 @@ namespace SubsDownloaderExtension
                     
                     return data.First().Attributes.Files.First().File_id.ToString();
                 }
-                catch (InvalidOperationException e)
+                catch (Exception e)
                 {
-                    MessageBox.Show("No subtitle was found");
+                    MessageBox.Show("No subtitle for this title was found in your language. This is likely due to the title being new and not being added to Opensubtitles.com yet.");
                     return null;
                 }
             }

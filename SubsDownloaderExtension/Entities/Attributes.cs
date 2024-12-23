@@ -10,6 +10,6 @@ namespace SubsDownloaderExtension
         public int Download_count { get; set; }
         public bool Ai_translated { get; set; }
         public List<Files> Files { get; set; }
-        public bool From_trusted { get; set; }
+        public bool? From_trusted { get; set; }
     }
 }
