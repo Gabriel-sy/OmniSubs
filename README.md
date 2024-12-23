@@ -1,5 +1,5 @@
 # Subtitles Downloader
-![example img](example.png)
+![example img](example.gif)
 
 An automated subtitle downloader for movies and TV shows that integrates with Windows context menu. This application allows you to download the best matching subtitles from OpenSubtitles.com with just a right-click on your video files.
 
@@ -9,12 +9,10 @@ An automated subtitle downloader for movies and TV shows that integrates with Wi
 
 ## Installation/Setup
 
-1. Download the latest rar from [releases page](https://github.com/Gabriel-sy/SubtitlesDownloader/releases)
-2. Extract the zip file to your preferred location
-3. Run the `setup.bat` file with administrator privileges
-4. Create a Opensubtitles.com account if you don't have one yet
-5. Double-click `LoginWindow.exe`
-6. Enter your OpenSubtitles.com credentials and select the language
+1. Download the latest .exe from [releases page](https://github.com/Gabriel-sy/SubtitlesDownloader/releases)
+2. Execute the .exe and install the program
+3. When finished, click the desktop shorcut that was created
+4. Enter your OpenSubtitles.com credentials, select the language and click the login button, after logging in, it will be ready to use
 
 ## How to Use
 
@@ -24,7 +22,7 @@ An automated subtitle downloader for movies and TV shows that integrates with Wi
 4. The subtitle file will be saved in the same directory as your video file
 
 ## Common issue
- - You might get "Incorrect username or password" even though it's correct, or another message saying the API is limited. It's Opensubtitles.com limiting the api requests and it fixes itself by just waiting some time without trying again.
+ - When logging in you might get message saying the API is limited. It's Opensubtitles.com limiting the api requests and it fixes itself by just waiting some time without trying again.
 
 ## Notes
  - Opensubtitles limits daily downloads for free users, so you might face errors downloading many in one day
