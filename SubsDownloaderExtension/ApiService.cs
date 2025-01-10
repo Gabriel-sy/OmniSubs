@@ -88,12 +88,13 @@ namespace SubsDownloaderExtension
         public async Task<string> SearchSubtitle(string token, string query, string language)
         {
             var secondLanguage = File.ReadLines(DATA_PATH).Skip(4).Take(1).First();
+            var hearingImpaired = File.ReadLines(DATA_PATH).Skip(5).Take(1).First() == "True" ? "only" : "exclude";
             
             var request = new HttpRequestMessage
             {
                 Method = HttpMethod.Get,
                 RequestUri = 
-                    new Uri($"https://api.opensubtitles.com/api/v1/subtitles?query={query}&languages={language}"),
+                    new Uri($"https://api.opensubtitles.com/api/v1/subtitles?query={query}&languages={language}&hearing_impaired={hearingImpaired}"),
                 Headers =
                 {
                     { "User-Agent", "subsdown" },

@@ -39,6 +39,7 @@ public partial class MainWindow : Window
         {
             var firstSelectedLanguage = ((ComboBoxItem)LanguageSelector.SelectedItem).Content.ToString() ?? "English";
             var secondSelectedLanguage = ((ComboBoxItem)SecondSelector.SelectedItem).Content.ToString() ?? "English";
+            
 
             var firstLanguageCode = GetLanguageCode(firstSelectedLanguage);
             var secondLanguageCode = GetLanguageCode(secondSelectedLanguage);
@@ -55,6 +56,8 @@ public partial class MainWindow : Window
                 sw.WriteLine(password);
                 sw.WriteLine(firstLanguageCode);
                 sw.WriteLine(secondLanguageCode);
+                sw.WriteLine(HearingImpairedCheckBox.IsChecked);
+                sw.WriteLine(SubtitleNameCheckBox.IsChecked);
             }
             RunBatchFile();
             MessageBox.Show("Login successful!");

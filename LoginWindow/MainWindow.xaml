@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:LoginWindow"
         mc:Ignorable="d"
-        Title="OpenSubtitles Login" Height="560" Width="450">
+        Title="OpenSubtitles Login" Height="570" Width="450">
     <Grid>
         <StackPanel Margin="50,40,50,40">
             <TextBlock Text="Login to OpenSubtitles.com"
@@ -32,9 +32,17 @@
                          FontSize="14"
                          Margin="0,0,0,13"/>
             
+            <CheckBox x:Name="HearingImpairedCheckBox" Grid.Row="1" Margin="0,0,0,8" 
+                      Content="Download hearing impaired subtitles"
+            />
+            
+            <CheckBox x:Name="SubtitleNameCheckBox" Grid.Row="1" Margin="0,0,0,8" 
+                      Content="Put language code in subtitle name"
+            />
+            
             <TextBlock Text="Preferred Language"
-               Margin="0,5,0,5"
-               FontSize="14"/>
+                       Margin="0,5,0,5"
+                       FontSize="14"/>
             
             <ComboBox x:Name="LanguageSelector"
                   Height="35"
