@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -85,7 +86,7 @@ namespace SubsDownloaderExtension
             }
         }
 
-        public async Task<string> SearchSubtitle(string token, string query, string language)
+        public async Task<SearchSubtitleResult> SearchSubtitle(string token, string query, string language)
         {
             var secondLanguage = File.ReadLines(DATA_PATH).Skip(4).Take(1).First();
             var hearingImpaired = File.ReadLines(DATA_PATH).Skip(5).Take(1).First() == "True" ? "only" : "exclude";
@@ -126,7 +127,11 @@ namespace SubsDownloaderExtension
                     var data = responseBody.Data.OrderByDescending(s => s.Attributes.From_trusted)
                         .ThenByDescending(s => s.Attributes.New_download_count).ThenByDescending(s => s.Attributes.Download_count);
                     
-                    return data.First().Attributes.Files.First().File_id.ToString();
+                    return new SearchSubtitleResult
+                    {
+                        SubtitleId = data.First().Attributes.Files.First().File_id.ToString(),
+                        Language = language
+                    };
                 }
                 catch (Exception e)
                 {
@@ -203,5 +208,10 @@ namespace SubsDownloaderExtension
                 
             }
         }
+    }
+    public class SearchSubtitleResult
+    {
+        public string SubtitleId { get; set; }
+        public string Language { get; set; }
     }
 }

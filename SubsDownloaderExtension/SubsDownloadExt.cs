@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
@@ -62,16 +63,21 @@ namespace SubsDownloaderExtension
             var token = File.ReadLines(DATA_PATH).Take(1).First();
             var fileName = Path.GetFileNameWithoutExtension(SelectedItemPaths.First());
             
-            var subtitleId = await _service.SearchSubtitle
+            
+            var subtitleSearchResult = await _service.SearchSubtitle
                 (token, fileName, language);
 
-            if (subtitleId == null) return;
+            if (subtitleSearchResult == null) return;
+
+            var languageInFileName = File.ReadLines(DATA_PATH).Skip(6).Take(1).First() == "True"
+                ? "." + subtitleSearchResult.Language
+                : "";
             
             var savePath = Path.GetDirectoryName(Path.GetFullPath(SelectedItemPaths.First()));
             
-            var fullPath = Path.Combine(savePath, $"{fileName}.srt");
+            var fullPath = Path.Combine(savePath, $"{fileName}{languageInFileName}.srt");
 
-            var downloadUrl = await _service.GetDownloadUrl(token, subtitleId);
+            var downloadUrl = await _service.GetDownloadUrl(token, subtitleSearchResult.SubtitleId);
 
             if (downloadUrl == null) return;
             
@@ -79,6 +85,8 @@ namespace SubsDownloaderExtension
             
             File.WriteAllBytes(fullPath, fileBytes);
         }
+        
+        
     }
     
 }
