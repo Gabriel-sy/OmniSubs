@@ -3,6 +3,11 @@
 
 An automated subtitle downloader for movies and TV shows that integrates with Windows context menu. This application allows you to download the best matching subtitles from OpenSubtitles.com with just a right-click on your video files.
 
+### Planned updates
+ - Download subtitles for all files in a folder.
+ - Choosing more than 1 language in case there isn't any for the first language.
+ - Choosing between hearing impaired subtitle or not. 
+
 ## Requirements
 - .NET Framework 4.8 or higher
 - OpenSubtitles.com account
