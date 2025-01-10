@@ -38,7 +38,9 @@ public partial class MainWindow : Window
         try
         {
             var firstSelectedLanguage = ((ComboBoxItem)LanguageSelector.SelectedItem).Content.ToString() ?? "English";
-            var secondSelectedLanguage = ((ComboBoxItem)SecondSelector.SelectedItem).Content.ToString() ?? "English";
+            var secondSelectedLanguage = SecondSelector.SelectedItem != null
+                ? ((ComboBoxItem)SecondSelector.SelectedItem).Content.ToString()
+                : "English";
             
 
             var firstLanguageCode = GetLanguageCode(firstSelectedLanguage);

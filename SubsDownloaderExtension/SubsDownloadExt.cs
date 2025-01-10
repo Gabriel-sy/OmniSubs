@@ -46,12 +46,20 @@ namespace SubsDownloaderExtension
 
             var subDownload = new ToolStripMenuItem
             {
-                Text = "Download Subtitles"
+                Text = "Download Subtitle"
+            };
+
+            var bulkDownload = new ToolStripMenuItem
+            {
+                Text = "Download Subtitles for all selected"
             };
 
             subDownload.Click += (sender, e) => DownloadSub();
+
+            bulkDownload.Click += (sender, e) => BulkDownload();
             
             menu.Items.Add(subDownload);
+            menu.Items.Add(bulkDownload);
 
             return menu;
         }
@@ -85,8 +93,50 @@ namespace SubsDownloaderExtension
             
             File.WriteAllBytes(fullPath, fileBytes);
         }
+
+        public async void BulkDownload()
+        {
+            var language = File.ReadLines(DATA_PATH).Skip(3).Take(1).First();
+            var token = File.ReadLines(DATA_PATH).Take(1).First();
+            
+            _service.CheckJwtStillValid();
+            
+            foreach (var selectedItemPath in SelectedItemPaths)
+            {
+                var fileName = Path.GetFileNameWithoutExtension(selectedItemPath);
+                
+                var subtitleSearchResult = await _service.SearchSubtitle
+                    (token, fileName, language);
+
+                if (subtitleSearchResult == null) return;
+
+                var languageInFileName = File.ReadLines(DATA_PATH).Skip(6).Take(1).First() == "True"
+                    ? "." + subtitleSearchResult.Language
+                    : "";
+            
+                var savePath = Path.GetDirectoryName(Path.GetFullPath(SelectedItemPaths.First()));
+            
+                var fullPath = Path.Combine(savePath, $"{fileName}{languageInFileName}.srt");
+
+                var downloadUrl = await _service.GetDownloadUrl(token, subtitleSearchResult.SubtitleId);
+
+                if (downloadUrl == null) return;
+            
+                var fileBytes = await _httpClient.GetByteArrayAsync(downloadUrl);
+            
+                File.WriteAllBytes(fullPath, fileBytes);
+            }
+        }
         
-        
+        // private void LogDebug(string message)
+        // {
+        //         string logPath = Path.Combine(
+        //             Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
+        //             "ShellExtensionLog.txt");
+        //         
+        //         File.AppendAllText(logPath, 
+        //             $"{DateTime.Now}: {message}{Environment.NewLine}");
+        // }
     }
     
 }
