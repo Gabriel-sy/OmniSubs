@@ -37,9 +37,11 @@ public partial class MainWindow : Window
     {
         try
         {
-            var selectedLanguage = ((ComboBoxItem)LanguageSelector.SelectedItem).Content.ToString() ?? "English";
+            var firstSelectedLanguage = ((ComboBoxItem)LanguageSelector.SelectedItem).Content.ToString() ?? "English";
+            var secondSelectedLanguage = ((ComboBoxItem)SecondSelector.SelectedItem).Content.ToString() ?? "English";
 
-            var languageCode = GetLanguageCode(selectedLanguage);
+            var firstLanguageCode = GetLanguageCode(firstSelectedLanguage);
+            var secondLanguageCode = GetLanguageCode(secondSelectedLanguage);
 
             if (!Directory.Exists(Path.GetDirectoryName(DATA_PATH)))
             {
@@ -51,7 +53,8 @@ public partial class MainWindow : Window
             {
                 sw.WriteLine("\n" + username);
                 sw.WriteLine(password);
-                sw.WriteLine(languageCode);
+                sw.WriteLine(firstLanguageCode);
+                sw.WriteLine(secondLanguageCode);
             }
             RunBatchFile();
             MessageBox.Show("Login successful!");

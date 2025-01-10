@@ -18,6 +18,8 @@ namespace SubsDownloaderExtension
             "SubtitleDownloader",
             "data.txt");
 
+        public int Limit = 1;
+
         public ApiService()
         {
             _httpClient = new HttpClient();
@@ -83,9 +85,9 @@ namespace SubsDownloaderExtension
             }
         }
 
-        public async Task<string> SearchSubtitle(string token, string query)
+        public async Task<string> SearchSubtitle(string token, string query, string language)
         {
-            var language = File.ReadLines(DATA_PATH).Skip(3).Take(1).First();
+            var secondLanguage = File.ReadLines(DATA_PATH).Skip(4).Take(1).First();
             
             var request = new HttpRequestMessage
             {
@@ -113,6 +115,12 @@ namespace SubsDownloaderExtension
                     var body = await response.Content.ReadAsStringAsync();
                 
                     var responseBody = JsonConvert.DeserializeObject<Result>(body);
+
+                    if (responseBody.Data.Count < 1 && Limit == 1)
+                    {
+                        Limit = 2;
+                        return await SearchSubtitle(token, query, secondLanguage);
+                    }
                 
                     var data = responseBody.Data.OrderByDescending(s => s.Attributes.From_trusted)
                         .ThenByDescending(s => s.Attributes.New_download_count).ThenByDescending(s => s.Attributes.Download_count);
@@ -188,7 +196,7 @@ namespace SubsDownloaderExtension
                 else
                 {
                     MessageBox.Show("You reached the daily quota for downloads, " +
-                                    "this is due to OpenSubtitles.com limiting download amount");
+                                    "this is due to OpenSubtitles.com limiting download amount for free users");
                     return null;
                 }
                 

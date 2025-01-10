@@ -58,11 +58,12 @@ namespace SubsDownloaderExtension
         {
             _service.CheckJwtStillValid();
             
+            var language = File.ReadLines(DATA_PATH).Skip(3).Take(1).First();
             var token = File.ReadLines(DATA_PATH).Take(1).First();
             var fileName = Path.GetFileNameWithoutExtension(SelectedItemPaths.First());
             
             var subtitleId = await _service.SearchSubtitle
-                (token, fileName);
+                (token, fileName, language);
 
             if (subtitleId == null) return;
             
