@@ -1,3 +1,7 @@
+![GitHub Downloads](https://img.shields.io/github/downloads/Gabriel-sy/SubtitlesDownloader/total?style=for-the-badge&color=blue&label=Downloads&logo=github&logoColor=white)
+
+In progress: AI subtitle translation with Google Gemini.
+
 # Subtitles Downloader
 ![example img](example.gif)
 
