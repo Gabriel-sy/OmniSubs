@@ -26,6 +26,35 @@ namespace SubsDownloaderExtension
         private Label _percentageLabel;
         private Panel _contentPanel;
         private GeminiService _translationService;
+        private List<Task<string>> _translationTasks = new List<Task<string>>();
+        private string[] _languages = {
+            "English",
+            "Chinese",
+            "Spanish",
+            "Arabic",
+            "Portuguese (Brazil)",
+            "Portuguese (Portugal)",
+            "Indonesian",
+            "French",
+            "Russian",
+            "Japanese",
+            "German",
+            "Turkish",
+            "Italian",
+            "Ukrainian",
+            "Polish",
+            "Dutch",
+            "Korean",
+            "Hindi",
+            "Romanian",
+            "Swedish",
+            "Danish",
+            "Finnish",
+            "Norwegian",
+            "Serbian",
+            "Irish",
+            "Filipino"
+        };
 
         public TranslateSubExt()
         {
@@ -40,26 +69,39 @@ namespace SubsDownloaderExtension
         protected override ContextMenuStrip CreateMenu()
         {
             var menu = new ContextMenuStrip();
+            ToolStripItem[] languageItems = new ToolStripItem[_languages.Length];
+            
+            for (int i = 0; i < _languages.Length; i++)
+            {
+                languageItems[i] = new ToolStripMenuItem
+                {
+                    Text = _languages[i]
+                };
+            }
 
             var tranlateSubtitle = new ToolStripMenuItem
             {
-                Text = "Translate subtitle"
-            };
-
-            tranlateSubtitle.Click += (sender, e) => TranslateSub();
-
+                Text = "Translate subtitle into...",
+            };  
+            tranlateSubtitle.DropDownItems.AddRange(languageItems);
+            tranlateSubtitle.DropDownDirection = ToolStripDropDownDirection.Default;
+            
+            tranlateSubtitle.DropDownItemClicked += (sender, e) =>
+                {
+                    TranslateSub(e.ClickedItem.Text);
+                };
+            
             menu.Items.Add(tranlateSubtitle);
 
             return menu;
         }
 
-        public async void TranslateSub()
+        public async void TranslateSub(string language)
         {
             ShowLoadingBox();
             try
             {
                 var fileContent = File.ReadLines(SelectedItemPaths.First()).ToList();
-                List<Task<string>> translationTasks = new List<Task<string>>();
                 List<List<string>> textsToTranslate = new List<List<string>>();
                 StringBuilder translatedTextBuilder = new StringBuilder();
                 _translationService = new GeminiService(15);
@@ -67,12 +109,9 @@ namespace SubsDownloaderExtension
                 var cutAmount = (int)Math.Ceiling((double)maxLines / 800);
                 var takeAmount = 0;
                 var basePrompt =
-                    $"I have a .srt subtitle file, and i need you to translate it into spanish, " +
-                    "try to take into consideration the context of the phrasing to translate it correctly, " +
-                    "do not answer with anything but the translation, also keep the same white spaces and blank lines and do not change the Subtitle Number from the original, your response should ALWAYS follow the following format: Subtitle Number \\n Timestamp: Start and end time for the subtitle, in HH:MM:SS,milliseconds --> HH:MM:SS,milliseconds format.\\n Subtitle Text: One or more lines of text for the subtitle. \\n Blank Line: Separates subtitle blocks";
-
-                int totalParts = textsToTranslate.Count;
-                int completedParts = 0;
+                    $"I need you to translate ONLY the following text in the following .srt file into {language}, and return the same .srt, but with the translated phrases, without ```srt or similar:";
+                var totalParts = textsToTranslate.Count;
+                var completedParts = 0;
 
                 while (cutAmount > 0)
                 {
@@ -85,12 +124,12 @@ namespace SubsDownloaderExtension
 
                 foreach (var list in textsToTranslate)
                 {
-                    var singleString = string.Join(" ", list);
+                    var singleString = string.Join("\n", list);
                     var prompt = basePrompt + singleString;
-                    translationTasks.Add(_translationService.TranslateSubtitle(prompt));
+                    _translationTasks.Add(_translationService.TranslateSubtitle(prompt));
                 }
 
-                foreach (var translationTask in translationTasks)
+                foreach (var translationTask in _translationTasks)
                 {
                     translationTask.ContinueWith(completed =>
                     {
@@ -99,7 +138,7 @@ namespace SubsDownloaderExtension
                     });
                 }
 
-                string[] translatedParts = await Task.WhenAll(translationTasks);
+                string[] translatedParts = await Task.WhenAll(_translationTasks);
                 
                 if (_loadingForm == null || _loadingForm.IsDisposed)
                 {
@@ -111,6 +150,27 @@ namespace SubsDownloaderExtension
                     if (!string.IsNullOrEmpty(part))
                     {
                         translatedTextBuilder.Append(part);
+                    } else if (string.IsNullOrEmpty(part))
+                    {
+                        return;
+                    }
+
+                    if (part == "429")
+                    {
+                        MessageBox.Show("The limit of requests has been reached. It could be the daily or minute limit, if it doesn't work in a minute, try again tomorrow.");
+                        return;
+                    } else if (part == "500")
+                    {
+                        MessageBox.Show("There was an internal server error at Google. Please try again later");
+                        return;
+                    } else if (part == "503")
+                    {
+                        MessageBox.Show("Google services are currently unavailable. Please try again later");
+                        return;
+                    } else if (part == "unknown")
+                    {
+                        MessageBox.Show("An unknown error occurred. Please try again later");
+                        return;
                     }
                 }
 
@@ -229,6 +289,10 @@ namespace SubsDownloaderExtension
     cancelButton.Click += (sender, e) => 
     {
         _translationService?.CancelAllOperations();
+        var fileName = Path.GetFileNameWithoutExtension(SelectedItemPaths.First());
+        var savePath = Path.GetDirectoryName(Path.GetFullPath(SelectedItemPaths.First()));
+        var fullPath = Path.Combine(savePath, $"{fileName}.translated.srt");
+        File.Delete(fullPath);
         CloseLoadingBox();
     };
 

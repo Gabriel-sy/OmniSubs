@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
@@ -113,13 +114,24 @@ namespace SubsDownloaderExtension
                             .Candidates.First().Content.Parts.First().Text;
                         return translatedPart;
                     }
+                    else if (response.StatusCode == (HttpStatusCode)429)
+                    {
+                        Interlocked.Exchange(ref _circuitStatus, Tripped);
+                        return "429";
+                    } else if (response.StatusCode == HttpStatusCode.InternalServerError)
+                    {
+                        return "500";
+                    } else if (response.StatusCode == HttpStatusCode.ServiceUnavailable)
+                    {
+                        return "503";
+                    }
                     else
                     {
-                        MessageBox.Show(response.Content.ReadAsStringAsync().Result);
-                        Interlocked.Exchange(ref _circuitStatus, Tripped);
-                        return Unavailable;
+                        return "unknown";
                     }
+                    
                 }
+                
             }
             catch (OperationCanceledException)
             {
