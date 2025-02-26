@@ -113,6 +113,7 @@
     <Compile Include="Entities\Result.cs" />
     <Compile Include="Entities\Subtitle.cs" />
     <Compile Include="GeminiService.cs" />
+    <Compile Include="LoadingForm.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
