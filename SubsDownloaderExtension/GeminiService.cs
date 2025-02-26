@@ -13,7 +13,7 @@ namespace SubsDownloaderExtension
 {
     public class GeminiService : IDisposable
     {
-
+        
         private readonly Uri _url = 
             new Uri(
             $"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=");
