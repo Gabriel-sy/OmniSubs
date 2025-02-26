@@ -11,9 +11,9 @@ using Newtonsoft.Json;
 
 namespace SubsDownloaderExtension
 {
-    public class GeminiService : IDisposable
+    public class GeminiService
     {
-        
+
         private readonly Uri _url = 
             new Uri(
             $"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=");
@@ -23,8 +23,6 @@ namespace SubsDownloaderExtension
         private const long Closed = 0;
         private const long Tripped = 1;
         private const string Unavailable = "Unavailable";
-        
-        private CancellationTokenSource _cancellationTokenSource;
         
         public GeminiService(int maxConcurrentRequests)
         {
@@ -37,8 +35,6 @@ namespace SubsDownloaderExtension
             _semaphore = new SemaphoreSlim(maxConcurrentRequests);
             
             _circuitStatus = Closed;
-            
-            _cancellationTokenSource = new CancellationTokenSource();
         }
         
         private bool IsTripped()
@@ -50,16 +46,11 @@ namespace SubsDownloaderExtension
         {
             try
             {
-                await _semaphore.WaitAsync(_cancellationTokenSource.Token);
+                await _semaphore.WaitAsync();
                 
                 if (IsTripped())
                 {
                     return Unavailable;
-                }
-                
-                if (_cancellationTokenSource.Token.IsCancellationRequested)
-                {
-                    return string.Empty;
                 }
                 
                 var requestBody = new
@@ -100,13 +91,8 @@ namespace SubsDownloaderExtension
                     }
                 };
                 
-                using (var response = await _httpClient.SendAsync(request, _cancellationTokenSource.Token))
+                using (var response = await _httpClient.SendAsync(request))
                 {
-                    if (_cancellationTokenSource.Token.IsCancellationRequested)
-                    {
-                        return string.Empty;
-                    }
-                    
                     if (response.IsSuccessStatusCode)
                     {
                         var responseContent = await response.Content.ReadAsStringAsync();
@@ -144,37 +130,7 @@ namespace SubsDownloaderExtension
             }
             finally
             {
-                if (!_cancellationTokenSource.Token.IsCancellationRequested)
-                {
                     _semaphore.Release();
-                }
-            }
-        }
-        
-        public void CancelAllOperations()
-        {
-            if (_cancellationTokenSource != null && !_cancellationTokenSource.IsCancellationRequested)
-            {
-                _cancellationTokenSource.Cancel();
-                
-                _cancellationTokenSource = new CancellationTokenSource();
-            }
-        }
-        
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-        
-        protected virtual void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                _cancellationTokenSource?.Cancel();
-                _cancellationTokenSource?.Dispose();
-                _httpClient?.Dispose();
-                _semaphore?.Dispose();
             }
         }
     }

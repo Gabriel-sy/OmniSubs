@@ -27,6 +27,7 @@ namespace SubsDownloaderExtension
         private Panel _contentPanel;
         private GeminiService _translationService;
         private List<Task<string>> _translationTasks = new List<Task<string>>();
+        private bool _isTranslateAndDownload = false;
         private string[] _languages = {
             "English",
             "Chinese",
@@ -99,6 +100,7 @@ namespace SubsDownloaderExtension
 
         public async void TranslateSub(string language, string path = "")
         {
+            _isTranslateAndDownload = path.Length > 1;
             ShowLoadingBox();
             try
             {
@@ -141,12 +143,7 @@ namespace SubsDownloaderExtension
                 }
 
                 string[] translatedParts = await Task.WhenAll(_translationTasks);
-
-                if (_loadingForm == null || _loadingForm.IsDisposed)
-                {
-                    return;
-                }
-
+                
                 foreach (var part in translatedParts)
                 {
                     if (!string.IsNullOrEmpty(part))
@@ -192,8 +189,6 @@ namespace SubsDownloaderExtension
             }
             finally
             {
-                _translationService?.Dispose();
-                _translationService = null;
                 CloseLoadingBox();
             }
 
@@ -290,7 +285,6 @@ namespace SubsDownloaderExtension
             cancelButton.FlatAppearance.BorderColor = Color.FromArgb(200, 200, 200);
             cancelButton.Click += (sender, e) =>
             {
-                _translationService?.CancelAllOperations();
                 var fileName = Path.GetFileNameWithoutExtension(SelectedItemPaths.First());
                 var savePath = Path.GetDirectoryName(Path.GetFullPath(SelectedItemPaths.First()));
                 var fullPath = Path.Combine(savePath, $"{fileName}.translated.srt");
@@ -298,7 +292,10 @@ namespace SubsDownloaderExtension
                 CloseLoadingBox();
             };
 
-            _contentPanel.Controls.Add(cancelButton);
+            if (_isTranslateAndDownload == false)
+            {
+                _contentPanel.Controls.Add(cancelButton);
+            }
             _contentPanel.Controls.Add(_percentageLabel);
             _contentPanel.Controls.Add(_progressBar);
             _contentPanel.Controls.Add(_loadingLabel);
@@ -328,11 +325,8 @@ namespace SubsDownloaderExtension
 
         private void CloseLoadingBox()
         {
-            if (_loadingForm != null && !_loadingForm.IsDisposed)
-            {
                 _loadingForm.Close();
                 _loadingForm.Dispose();
-            }
         }
 
         private void UpdateProgressBar(int currentPart, int totalParts)
