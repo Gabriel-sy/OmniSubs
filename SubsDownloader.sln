@@ -1,7 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LoginWindow", "LoginWindow\LoginWindow.csproj", "{AE592840-27D1-46E3-9ABE-ACCBA8126768}"
-EndProject
+# Visual Studio Version 17
+VisualStudioVersion = 17.11.35208.52
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SubsDownloaderExtension", "SubsDownloaderExtension\SubsDownloaderExtension.csproj", "{3FDE4941-006D-45E2-ABEA-A14754272E1C}"
 EndProject
 Global
@@ -10,13 +11,12 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{AE592840-27D1-46E3-9ABE-ACCBA8126768}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{AE592840-27D1-46E3-9ABE-ACCBA8126768}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{AE592840-27D1-46E3-9ABE-ACCBA8126768}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{AE592840-27D1-46E3-9ABE-ACCBA8126768}.Release|Any CPU.Build.0 = Release|Any CPU
 		{3FDE4941-006D-45E2-ABEA-A14754272E1C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{3FDE4941-006D-45E2-ABEA-A14754272E1C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3FDE4941-006D-45E2-ABEA-A14754272E1C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3FDE4941-006D-45E2-ABEA-A14754272E1C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
 	EndGlobalSection
 EndGlobal
