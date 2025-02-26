@@ -100,7 +100,6 @@ namespace SubsDownloaderExtension
             loadingForm.ShowLoadingBox();
             try
             {
-                
                 var fileContent = File.ReadLines(filePath).ToList();
                 List<List<string>> textsToTranslate = new List<List<string>>();
                 StringBuilder translatedTextBuilder = new StringBuilder();
@@ -110,7 +109,6 @@ namespace SubsDownloaderExtension
                 var takeAmount = 0;
                 var basePrompt =
                     $"I need you to translate ONLY the following text in the following .srt file into {language}, and return the same .srt, but with the translated phrases, without ```srt or similar:";
-                var totalParts = textsToTranslate.Count;
                 var completedParts = 0;
 
                 while (cutAmount > 0)
@@ -119,22 +117,15 @@ namespace SubsDownloaderExtension
                     takeAmount += 800;
                     cutAmount--;
                 }
-
-                totalParts = textsToTranslate.Count;
-
-                foreach (var list in textsToTranslate)
-                {
-                    var singleString = string.Join("\n", list);
-                    var prompt = basePrompt + singleString;
-                    _translationTasks.Add(_translationService.TranslateSubtitle(prompt));
-                }
+                
+                AddTranslationTasks(textsToTranslate, basePrompt);
 
                 foreach (var translationTask in _translationTasks)
                 {
                     translationTask.ContinueWith(completed =>
                     {
                         completedParts++;
-                        loadingForm.UpdateProgressBar(completedParts, totalParts);
+                        loadingForm.UpdateProgressBar(completedParts, textsToTranslate.Count);
                     });
                 }
 
@@ -147,37 +138,12 @@ namespace SubsDownloaderExtension
                         translatedTextBuilder.Append(part);
                     }
 
-                    if (part == "429")
-                    {
-                        MessageBox.Show("The limit of requests has been reached. It could be the daily or minute limit, if it doesn't work in a minute, try again tomorrow.");
-                        return;
-                    }
-                    else if (part == "500")
-                    {
-                        MessageBox.Show("There was an internal server error at Google. Please try again later");
-                        return;
-                    }
-                    else if (part == "503")
-                    {
-                        MessageBox.Show("Google services are currently unavailable. Please try again later");
-                        return;
-                    }
-                    else if (part == "unknown")
-                    {
-                        MessageBox.Show("An unknown error occurred. Please try again later");
-                        return;
-                    }
+                    if (PartHasResponseError(part)) return;
                 }
 
                 var translatedText = translatedTextBuilder.ToString();
 
-                if (!string.IsNullOrEmpty(translatedText))
-                {
-                    var fileName = Path.GetFileNameWithoutExtension(filePath);
-                    var savePath = Path.GetDirectoryName(Path.GetFullPath(filePath));
-                    var fullPath = Path.Combine(savePath, $"{fileName}.translated.srt");
-                    File.WriteAllText(fullPath, translatedText);
-                }
+                GetFullPathAndWriteText(filePath, translatedText);
             }
             catch (Exception ex)
             {
@@ -190,6 +156,53 @@ namespace SubsDownloaderExtension
 
         }
 
+        private void AddTranslationTasks(List<List<string>> textsToTranslate, string basePrompt)
+        {
+            foreach (var list in textsToTranslate)
+            {
+                var singleString = string.Join("\n", list);
+                var prompt = basePrompt + singleString;
+                _translationTasks.Add(_translationService.TranslateSubtitle(prompt));
+            }
+        }
+
+        private bool PartHasResponseError(string part)
+        {
+            if (part == "429")
+            {
+                MessageBox.Show("The limit of requests has been reached. It could be the daily or minute limit, if it doesn't work in a minute, try again tomorrow.");
+                return true;
+            }
+            else if (part == "500")
+            {
+                MessageBox.Show("There was an internal server error at Google. Please try again later");
+                return true;
+            }
+            else if (part == "503")
+            {
+                MessageBox.Show("Google services are currently unavailable. Please try again later");
+                return true;
+            }
+            else if (part == "unknown")
+            {
+                MessageBox.Show("An unknown error occurred. Please try again later");
+                return true;
+            }
+
+            return false;
+        }
+        
+        private void GetFullPathAndWriteText(string filePath, string translatedText)
+        {
+            if (!string.IsNullOrEmpty(translatedText))
+            {
+                var fileName = Path.GetFileNameWithoutExtension(filePath);
+                var savePath = Path.GetDirectoryName(Path.GetFullPath(filePath));
+                var fullPath = Path.Combine(savePath, $"{fileName}.translated.srt");
+                File.WriteAllText(fullPath, translatedText);
+            }
+        }
+        
         private void LogDebug(string message)
         {
             string logPath = Path.Combine(
