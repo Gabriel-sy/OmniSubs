@@ -117,7 +117,7 @@ namespace SubsDownloaderExtension
                     takeAmount += 800;
                     cutAmount--;
                 }
-                
+
                 AddTranslationTasks(textsToTranslate, basePrompt);
 
                 foreach (var translationTask in _translationTasks)
@@ -170,7 +170,7 @@ namespace SubsDownloaderExtension
         {
             if (part == "429")
             {
-                MessageBox.Show("The limit of requests has been reached. It could be the daily or minute limit, if it doesn't work in a minute, try again tomorrow.");
+                MessageBox.Show("The limit of requests has been reached. If it doesn't work after a minute, you can either: wait until tomorrow, or get your own Gemini API key and place it in the same window you logged in.");
                 return true;
             }
             else if (part == "500")
@@ -183,6 +183,11 @@ namespace SubsDownloaderExtension
                 MessageBox.Show("Google services are currently unavailable. Please try again later");
                 return true;
             }
+            else if (part == "401")
+            {
+                MessageBox.Show("Invalid Gemini API key");
+                return true;
+            }
             else if (part == "unknown")
             {
                 MessageBox.Show("An unknown error occurred. Please try again later");
@@ -191,7 +196,7 @@ namespace SubsDownloaderExtension
 
             return false;
         }
-        
+
         private void GetFullPathAndWriteText(string filePath, string translatedText)
         {
             if (!string.IsNullOrEmpty(translatedText))
@@ -202,7 +207,7 @@ namespace SubsDownloaderExtension
                 File.WriteAllText(fullPath, translatedText);
             }
         }
-        
+
         private void LogDebug(string message)
         {
             string logPath = Path.Combine(

@@ -1,13 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Newtonsoft.Json;
+using System;
 using System.IO;
 using System.Linq;
-using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using Newtonsoft.Json;
 
 namespace SubsDownloaderExtension
 {
@@ -36,9 +34,9 @@ namespace SubsDownloaderExtension
             {
                 if (!Directory.Exists(Path.GetDirectoryName(DATA_PATH)))
                 {
-                    Directory.CreateDirectory(Path.GetDirectoryName(DATA_PATH)); 
+                    Directory.CreateDirectory(Path.GetDirectoryName(DATA_PATH));
                 }
-                
+
                 File.WriteAllText(DATA_PATH, token);
                 using (var sw = new StreamWriter(DATA_PATH, true))
                 {
@@ -51,14 +49,14 @@ namespace SubsDownloaderExtension
                 MessageBox.Show("There was an error when logging you into opensubtitles, try relogging.");
             }
         }
-        
+
         public async void LogIn(string username, string password)
         {
             var request = new HttpRequestMessage
             {
                 Method = HttpMethod.Post,
                 RequestUri = new Uri("https://api.opensubtitles.com/api/v1/login"),
-        
+
                 Content = new StringContent
                 ("{\n  \"username\": \"" + username + "\",\n  \"password\": \"" + password +
                  "\"\n}")
@@ -69,12 +67,12 @@ namespace SubsDownloaderExtension
                     }
                 }
             };
-        
+
             using (var response = await _httpClient.SendAsync(request))
             {
                 if (!response.IsSuccessStatusCode)
                 {
-                    MessageBox.Show("You either didn't login through the LoginWindow.exe yet or The API is limited. This is a opensubtitles issue, it usually fixes itself, but could take up to an hour.");
+                    MessageBox.Show("You need to login through the interface first.");
                 }
                 else
                 {
@@ -82,7 +80,7 @@ namespace SubsDownloaderExtension
                     var responseBody = JsonConvert.DeserializeObject<Jwt>(stream);
                     SaveToken(responseBody.Token, username, password);
                 }
-        
+
             }
         }
 
@@ -90,11 +88,11 @@ namespace SubsDownloaderExtension
         {
             var secondLanguage = File.ReadLines(DATA_PATH).Skip(4).Take(1).First();
             var hearingImpaired = File.ReadLines(DATA_PATH).Skip(5).Take(1).First() == "True" ? "only" : "exclude";
-            
+
             var request = new HttpRequestMessage
             {
                 Method = HttpMethod.Get,
-                RequestUri = 
+                RequestUri =
                     new Uri($"https://api.opensubtitles.com/api/v1/subtitles?query={query}&languages={language}&hearing_impaired={hearingImpaired}"),
                 Headers =
                 {
@@ -105,7 +103,7 @@ namespace SubsDownloaderExtension
             };
             using (var response = await _httpClient.SendAsync(request))
             {
-                
+
                 if (!response.IsSuccessStatusCode)
                 {
                     MessageBox.Show("An error ocurred while searching the subtitle, try again later");
@@ -115,7 +113,7 @@ namespace SubsDownloaderExtension
                 try
                 {
                     var body = await response.Content.ReadAsStringAsync();
-                
+
                     var responseBody = JsonConvert.DeserializeObject<Result>(body);
 
                     if (responseBody.Data.Count < 1 && Limit == 1)
@@ -123,10 +121,10 @@ namespace SubsDownloaderExtension
                         Limit = 2;
                         return await SearchSubtitle(token, query, secondLanguage);
                     }
-                
+
                     var data = responseBody.Data.OrderByDescending(s => s.Attributes.From_trusted)
                         .ThenByDescending(s => s.Attributes.New_download_count).ThenByDescending(s => s.Attributes.Download_count);
-                    
+
                     return new SearchSubtitleResult
                     {
                         SubtitleId = data.First().Attributes.Files.First().File_id.ToString(),
@@ -135,7 +133,7 @@ namespace SubsDownloaderExtension
                 }
                 catch (Exception e)
                 {
-                    MessageBox.Show("No subtitle for this title was found in your language. This is likely due to the title being new and not being added to Opensubtitles.com yet.");
+                    MessageBox.Show("No subtitle for this title was found in your language. If you enabled hearing impaired subtitles, disabling could help.");
                     return null;
                 }
             }
@@ -171,7 +169,7 @@ namespace SubsDownloaderExtension
                 }
             }
         }
-        
+
         public async Task<string> GetDownloadUrl(string token, string subtitleId)
         {
             var request = new HttpRequestMessage
@@ -195,17 +193,16 @@ namespace SubsDownloaderExtension
                 if (response.IsSuccessStatusCode)
                 {
                     var body = await response.Content.ReadAsStringAsync();
-                
+
                     var responseBody = JsonConvert.DeserializeObject<DownloadResult>(body);
                     return responseBody.Link;
                 }
                 else
                 {
-                    MessageBox.Show("You reached the daily quota for downloads, " +
-                                    "this is due to OpenSubtitles.com limiting download amount for free users");
+                    MessageBox.Show("You reached the daily quota for your account. You can either create another account and login again, or buy premium in opensubtitles.com website.");
                     return null;
                 }
-                
+
             }
         }
     }
