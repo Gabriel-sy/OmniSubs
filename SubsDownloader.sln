@@ -5,7 +5,7 @@ VisualStudioVersion = 17.11.35208.52
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SubsDownloaderExtension", "SubsDownloaderExtension\SubsDownloaderExtension.csproj", "{3FDE4941-006D-45E2-ABEA-A14754272E1C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LoginWindow", "LoginWindow\LoginWindow.csproj", "{31E9E1B0-2783-43CE-B043-B69E92E937F4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MainGUI", "MainGUI\MainGUI.csproj", "{ED8A4712-CD06-4E18-8C51-D03C755B9FE7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,10 +17,10 @@ Global
 		{3FDE4941-006D-45E2-ABEA-A14754272E1C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3FDE4941-006D-45E2-ABEA-A14754272E1C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3FDE4941-006D-45E2-ABEA-A14754272E1C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{31E9E1B0-2783-43CE-B043-B69E92E937F4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{31E9E1B0-2783-43CE-B043-B69E92E937F4}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{31E9E1B0-2783-43CE-B043-B69E92E937F4}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{31E9E1B0-2783-43CE-B043-B69E92E937F4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ED8A4712-CD06-4E18-8C51-D03C755B9FE7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ED8A4712-CD06-4E18-8C51-D03C755B9FE7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ED8A4712-CD06-4E18-8C51-D03C755B9FE7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ED8A4712-CD06-4E18-8C51-D03C755B9FE7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
