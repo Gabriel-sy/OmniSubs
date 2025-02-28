@@ -1,38 +1,40 @@
 ![GitHub Downloads](https://img.shields.io/github/downloads/Gabriel-sy/SubtitlesDownloader/total?style=for-the-badge&color=blue&label=Downloads&logo=github&logoColor=white)
 
-In progress: AI subtitle translation with Google Gemini.
+# OmniSubs
 
-# Subtitles Downloader
-![example img](example.gif)
+![Example](example.gif)
 
-An automated subtitle downloader for movies and TV shows that integrates with Windows context menu. This application allows you to download the best matching subtitles from OpenSubtitles.com with just a right-click on your video files.
+**OmniSubs** is a powerful Windows context menu tool that lets you download premium-quality subtitles from [OpenSubtitles.com](https://www.opensubtitles.com) with a single click. Plus, it instantly translates `.srt` files to any language using Gemini, allowing you to enjoy your favorite content without language barriers.
 
-### Planned updates
- - Download subtitles for all files in a folder.
- - Choosing more than 1 language in case there isn't any for the first language.
- - Choosing between hearing impaired subtitle or not. 
+## Features
+
+- **Seamless Integration:** Download subtitles directly from the Windows context menu.
+- **Instant Translation:** Translate subtitle files to your preferred language with Gemini.
 
 ## Requirements
-- .NET Framework 4.8 or higher
-- OpenSubtitles.com account
 
-## Installation/Setup
+- An account on [OpenSubtitles.com](https://www.opensubtitles.com).
 
-1. Download the latest .exe from [releases page](https://github.com/Gabriel-sy/SubtitlesDownloader/releases)
-2. Execute the .exe and install the program
-3. When finished, click the desktop shorcut that was created
-4. Enter your OpenSubtitles.com credentials, select the language and click the login button, after logging in, it will be ready to use
+## Installation & Setup
+
+1. **Download the Installer:** Get the latest version from [this link](https://github.com/Gabriel-sy/OmniSubs/releases/download/v2.0/OmniSubsInstaller.msi).
+2. **Run the Installer:** Execute the installer and follow the standard installation process.
+3. **Launch the Program:** Click on the desktop shortcut created after installation.
+4. **Log In:** Enter your OpenSubtitles.com credentials and click the “Login” button.
+5. **Configure Settings:** Adjust your preferences and click the “Save/Install” button. OmniSubs is now ready to use!
 
 ## How to Use
 
-1. Right-click a video file
-2. Look for "Download Subtitles" in the context menu
-3. Click the option and wait for the download to complete
-4. The subtitle file will be saved in the same directory as your video file
-
-## Common issue
- - When logging in you might get message saying the API is limited. It's Opensubtitles.com limiting the api requests and it fixes itself by just waiting some time without trying again.
+1. **Right-Click a Video File:** Locate your video file, right-click it, and open the context menu.
+2. **Select "Download Subtitles":** Click on the “Download Subtitle” option.
+3. **Wait for the Download:** The subtitle file will be downloaded automatically.
+4. **Locate Your Subtitle:** The `.srt` file will be saved in the same directory as your video file.
 
 ## Notes
- - Opensubtitles limits daily downloads for free users, so you might face errors downloading many in one day
- - This application only stores your login credentials locally. Your credentials are used solely for authenticating with OpenSubtitles.com
+
+- **Daily Limit:** Free users of OpenSubtitles.com have a daily download limit, which may result in errors if you attempt too many downloads in a single day.
+- **Credential Security:** Your login details are stored locally and are used solely for authentication with OpenSubtitles.com.
+
+## Contributing
+
+Contributions to improve OmniSubs are welcome! Feel free to submit pull requests or open issues!
