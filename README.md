@@ -8,8 +8,9 @@
 
 ## Features
 
-- **Seamless Integration:** Download subtitles directly from the Windows context menu.
-- **Instant Translation:** Translate subtitle files to your preferred language with Gemini.
+- Download subtitles directly from the Windows context menu with 2 clicks.
+- Bulk download subtitles by selecting multiple video files.
+- Translate subtitle files to your preferred language with Gemini.
 
 ## Requirements
 
